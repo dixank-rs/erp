@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reports — Portable ERP</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="css/erp.css" rel="stylesheet">
+</head>
+<body>
+<div id="sidebar-backdrop"></div>
+<nav id="erp-sidebar">
+  <div class="sidebar-brand"><div class="d-flex align-items-center gap-2 mb-1"><div style="width:34px;height:34px;background:linear-gradient(135deg,#1a56db,#3b82f6);border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="bi bi-box-seam-fill text-white" style="font-size:.95rem"></i></div><div><div class="brand-title">Portable ERP</div><div class="brand-sub">Local server · Portable</div></div></div></div>
+  <div class="sidebar-nav-scroll">
+    <div class="pt-1">
+      <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html" data-page="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="inventory.html" data-page="inventory"><i class="bi bi-boxes"></i>Inventory</a></li>
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="stock-ledger.html" data-page="ledger"><i class="bi bi-journal-text"></i>Stock Ledger</a></li>
+      </ul>
+      <div class="nav-section-label mt-2">Transactions</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="purchase.html" data-page="purchase"><i class="bi bi-cart-check"></i>Purchases</a></li>
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="sales.html" data-page="sales"><i class="bi bi-bag-check"></i>Sales</a></li>
+        <li class="nav-item"><a class="nav-link" href="jobs.html" data-page="jobs"><i class="bi bi-wrench-adjustable"></i>Jobs</a></li>
+      </ul>
+      <div class="nav-section-label mt-2">Analysis</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="reports.html" data-page="reports"><i class="bi bi-bar-chart-line"></i>Reports</a></li>
+        <li class="nav-item" data-erp-nav-admin>
+          <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" data-erp-logs-toggle href="#nav-logs-sub" role="button" aria-expanded="false" aria-controls="nav-logs-sub"><i class="bi bi-journals"></i>Logs<i class="bi bi-chevron-down small opacity-75 ms-auto"></i></a>
+          <div class="collapse" id="nav-logs-sub">
+            <ul class="nav flex-column border-start ms-3 ps-2 mt-1 mb-2 erp-nav-sub">
+              <li class="nav-item"><a class="nav-link py-1 ps-2" href="logs-activity.html" data-page="logs-activity"><i class="bi bi-activity"></i>Activity log</a></li>
+              <li class="nav-item"><a class="nav-link py-1 ps-2" href="logs-error.html" data-page="logs-error"><i class="bi bi-bug"></i>Error log</a></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div class="nav-section-label mt-2">Account</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-profile><a class="nav-link" href="profile.html" data-page="profile"><i class="bi bi-person-circle"></i>Profile</a></li>
+        <li class="nav-item" data-erp-nav-admin><a class="nav-link" href="users.html" data-page="users"><i class="bi bi-people"></i>Users</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-footer"><a class="nav-link sidebar-logout" href="#" id="erp-logout"><i class="bi bi-box-arrow-right"></i>Log Out</a></div>
+</nav>
+<div id="erp-topbar">
+  <button id="sidebar-toggler"><i class="bi bi-list"></i></button>
+  <span class="page-title"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Reports</span>
+  <div class="erp-topbar-user ms-auto">
+    <span id="erp-username" class="erp-topbar-name"></span>
+    <span id="erp-role-badge"></span>
+  </div>
+</div>
+<div id="erp-main">
+<div class="main-content">
+  <div class="page-header">
+    <div><h1>Reports</h1><p>Analytics, valuation and business insights</p></div>
+  </div>
+
+  <!-- Report tabs: pill bar (scrolls on small screens) -->
+  <div class="erp-report-tabs-card mb-4">
+    <ul class="nav nav-pills erp-report-nav" id="reportTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="rep-tab-val" data-bs-toggle="tab" href="#tab-valuation" role="tab" aria-controls="tab-valuation" aria-selected="true" title="Inventory valuation by category and SKU"><i class="bi bi-currency-rupee"></i><span>Valuation</span></a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="rep-tab-sales" data-bs-toggle="tab" href="#tab-sales" role="tab" aria-controls="tab-sales" aria-selected="false" title="Sales summary and top customers"><i class="bi bi-bag-check"></i><span>Sales</span></a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="rep-tab-po" data-bs-toggle="tab" href="#tab-purchase" role="tab" aria-controls="tab-purchase" aria-selected="false" title="Purchase orders and suppliers"><i class="bi bi-cart-check"></i><span>Purchases</span></a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="rep-tab-mov" data-bs-toggle="tab" href="#tab-movements" role="tab" aria-controls="tab-movements" aria-selected="false" title="Stock movements by type"><i class="bi bi-arrows-exchange"></i><span>Movements</span></a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="rep-tab-low" data-bs-toggle="tab" href="#tab-lowstock" role="tab" aria-controls="tab-lowstock" aria-selected="false" title="Items at or below reorder point"><i class="bi bi-exclamation-triangle"></i><span>Low stock</span></a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="rep-tab-jobs" data-bs-toggle="tab" href="#tab-jobs" role="tab" aria-controls="tab-jobs" aria-selected="false" title="Jobs by status, priority, material cost"><i class="bi bi-wrench-adjustable"></i><span>Jobs</span></a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="tab-content" id="reportTabContent">
+    <!-- Inventory Valuation -->
+    <div class="tab-pane fade show active" id="tab-valuation">
+      <div class="row g-3 mb-3" id="val-summary-cards"></div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom"><strong>By Category</strong></div>
+            <div class="card-body p-0">
+              <table class="table erp-table erp-table-compact table-sm mb-0">
+                <thead><tr><th>Category</th><th class="text-end">Products</th><th class="text-end">Total Value</th><th class="text-end">% Share</th></tr></thead>
+                <tbody id="val-by-cat"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom"><strong>Category Bar Chart</strong></div>
+            <div class="card-body" id="val-chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom"><strong>Product Valuation Detail</strong></div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table erp-table erp-table-compact table-sm mb-0">
+              <thead><tr><th>SKU</th><th>Product</th><th>Category</th><th class="text-end">Stock</th><th class="text-end">Cost Price</th><th class="text-end">Sale Price</th><th class="text-end">Stock Value</th><th class="text-end">Potential Revenue</th></tr></thead>
+              <tbody id="val-detail"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sales Summary -->
+    <div class="tab-pane fade" id="tab-sales">
+      <div class="row g-3 mb-4" id="sales-summary-cards"></div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom"><strong>Sales by Status</strong></div>
+            <div class="card-body" id="sales-by-status"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom"><strong>Top Customers by Revenue</strong></div>
+            <div class="card-body p-0">
+              <table class="table erp-table erp-table-compact table-sm mb-0">
+                <thead><tr><th>Customer</th><th class="text-end">Orders</th><th class="text-end">Revenue</th></tr></thead>
+                <tbody id="top-customers"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Purchase Summary -->
+    <div class="tab-pane fade" id="tab-purchase">
+      <div class="row g-3 mb-4" id="po-summary-cards"></div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom"><strong>Purchase by Status</strong></div>
+            <div class="card-body" id="po-by-status"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom"><strong>Top Suppliers by Spend</strong></div>
+            <div class="card-body p-0">
+              <table class="table erp-table erp-table-compact table-sm mb-0">
+                <thead><tr><th>Supplier</th><th class="text-end">Orders</th><th class="text-end">Total Spend</th></tr></thead>
+                <tbody id="top-suppliers"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Movements -->
+    <div class="tab-pane fade" id="tab-movements">
+      <div class="row g-3 mb-4" id="mov-summary-cards"></div>
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom"><strong>Stock Movements by Type</strong></div>
+        <div class="card-body" id="mov-by-type"></div>
+      </div>
+    </div>
+
+    <!-- Low Stock -->
+    <div class="tab-pane fade" id="tab-lowstock">
+      <div class="row g-3 mb-3" id="low-summary-cards"></div>
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom"><strong>Products At or Below Reorder Point</strong></div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table erp-table erp-table-compact table-sm mb-0">
+              <thead><tr><th>SKU</th><th>Product</th><th>Category</th><th class="text-end">Current Stock</th><th class="text-end">Reorder Point</th><th class="text-end">Shortfall</th><th>Status</th></tr></thead>
+              <tbody id="low-stock-detail"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jobs Report -->
+    <div class="tab-pane fade" id="tab-jobs">
+      <div class="row g-3 mb-4" id="jobs-summary-cards"></div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom"><strong>Jobs by Status</strong></div>
+            <div class="card-body" id="jobs-by-status"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom"><strong>Jobs by Priority</strong></div>
+            <div class="card-body" id="jobs-by-priority"></div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom"><strong>Material Cost by Job</strong></div>
+            <div class="card-body p-0">
+              <table class="table erp-table erp-table-compact table-sm mb-0">
+                <thead><tr><th>Job</th><th>Title</th><th>Status</th><th>Assigned To</th><th class="text-end">Material Cost</th></tr></thead>
+                <tbody id="jobs-mat-cost"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+ERPAPP.initLayout('reports');
+if (ERPAPP.getRole() === 'operator') { window.location.href = 'dashboard.html'; }
+
+const products = ERPDATA.getProducts();
+const ledger = ERPDATA.getLedger();
+const purchases = ERPDATA.getPurchases();
+const sales = ERPDATA.getSales();
+const jobs = ERPDATA.getJobs();
+
+function barChart(containerId, data, colorClass) {
+  const maxVal = Math.max(...data.map(d => d.value));
+  document.getElementById(containerId).innerHTML = data.map(d => `
+    <div class="mb-2">
+      <div class="d-flex justify-content-between small mb-1"><span>${d.label}</span><span class="fw-semibold">${d.display||ERPAPP.fmtCurrency(d.value)}</span></div>
+      <div class="progress progress-xs"><div class="progress-bar ${colorClass}" style="width:${maxVal ? Math.round(d.value/maxVal*100) : 0}%"></div></div>
+    </div>`).join('');
+}
+
+// ===== INVENTORY VALUATION =====
+const totalCostVal = products.reduce((s,p) => s+p.costPrice*p.stockQty,0);
+const totalSaleVal = products.reduce((s,p) => s+p.salePrice*p.stockQty,0);
+const potentialProfit = totalSaleVal - totalCostVal;
+const cats = {};
+products.forEach(p => {
+  const c = p.category||'Uncategorised';
+  if (!cats[c]) cats[c] = { count:0, costVal:0 };
+  cats[c].count++; cats[c].costVal += p.costPrice * p.stockQty;
+});
+document.getElementById('val-summary-cards').innerHTML = `
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value">${products.length}</div><div class="kpi-label">Products</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-success">${ERPAPP.fmtCurrency(totalCostVal)}</div><div class="kpi-label">Inventory Cost Value</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-primary">${ERPAPP.fmtCurrency(totalSaleVal)}</div><div class="kpi-label">Potential Revenue</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-warning">${ERPAPP.fmtCurrency(potentialProfit)}</div><div class="kpi-label">Potential Profit</div></div></div></div>`;
+const catArr = Object.entries(cats).sort((a,b) => b[1].costVal-a[1].costVal);
+document.getElementById('val-by-cat').innerHTML = catArr.map(([cat,d]) => `
+  <tr>
+    <td class="fw-500">${cat}</td>
+    <td class="text-end">${d.count}</td>
+    <td class="text-end fw-semibold">${ERPAPP.fmtCurrency(d.costVal)}</td>
+    <td class="text-end text-muted">${totalCostVal ? Math.round(d.costVal/totalCostVal*100) : 0}%</td>
+  </tr>`).join('');
+barChart('val-chart', catArr.map(([cat,d]) => ({ label:cat, value:d.costVal })), 'bg-primary');
+document.getElementById('val-detail').innerHTML = products.map(p => `
+  <tr>
+    <td><span class="erp-doc-ref">${p.sku}</span></td>
+    <td>${p.name}</td>
+    <td><span class="badge bg-light text-dark border">${p.category||'—'}</span></td>
+    <td class="text-end">${p.stockQty} ${p.unit}</td>
+    <td class="text-end">₹${ERPAPP.fmt(p.costPrice)}</td>
+    <td class="text-end">₹${ERPAPP.fmt(p.salePrice)}</td>
+    <td class="text-end fw-semibold text-success">₹${ERPAPP.fmt(p.costPrice*p.stockQty)}</td>
+    <td class="text-end fw-semibold text-primary">₹${ERPAPP.fmt(p.salePrice*p.stockQty)}</td>
+  </tr>`).join('');
+
+// ===== SALES SUMMARY =====
+const totalSalesRev = sales.filter(s=>s.status!=='cancelled').reduce((sum,s)=>sum+s.totalAmount,0);
+const deliveredRev = sales.filter(s=>s.status==='delivered').reduce((sum,s)=>sum+s.totalAmount,0);
+const pendingRev = sales.filter(s=>s.status==='pending'||s.status==='shipped').reduce((sum,s)=>sum+s.totalAmount,0);
+document.getElementById('sales-summary-cards').innerHTML = `
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value">${sales.length}</div><div class="kpi-label">Total Orders</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-success">${ERPAPP.fmtCurrency(totalSalesRev)}</div><div class="kpi-label">Total Revenue</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-primary">${ERPAPP.fmtCurrency(deliveredRev)}</div><div class="kpi-label">Realised Revenue</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-warning">${ERPAPP.fmtCurrency(pendingRev)}</div><div class="kpi-label">Pending Revenue</div></div></div></div>`;
+const salesStatusData = [{label:'Pending',value:sales.filter(s=>s.status==='pending').length,display:sales.filter(s=>s.status==='pending').length+' orders'},{label:'Shipped',value:sales.filter(s=>s.status==='shipped').length,display:sales.filter(s=>s.status==='shipped').length+' orders'},{label:'Delivered',value:sales.filter(s=>s.status==='delivered').length,display:sales.filter(s=>s.status==='delivered').length+' orders'},{label:'Cancelled',value:sales.filter(s=>s.status==='cancelled').length,display:sales.filter(s=>s.status==='cancelled').length+' orders'}];
+barChart('sales-by-status', salesStatusData, 'bg-info');
+const customerMap = {};
+sales.filter(s=>s.status!=='cancelled').forEach(s => { if(!customerMap[s.customer]){customerMap[s.customer]={orders:0,rev:0};} customerMap[s.customer].orders++; customerMap[s.customer].rev+=s.totalAmount; });
+document.getElementById('top-customers').innerHTML = Object.entries(customerMap).sort((a,b)=>b[1].rev-a[1].rev).map(([c,d]) => `<tr><td>${c}</td><td class="text-end">${d.orders}</td><td class="text-end fw-semibold">${ERPAPP.fmtCurrency(d.rev)}</td></tr>`).join('');
+
+// ===== PURCHASE SUMMARY =====
+const totalPoSpend = purchases.filter(p=>p.status==='received').reduce((s,p)=>s+p.totalAmount,0);
+const pendingPoVal = purchases.filter(p=>p.status==='pending').reduce((s,p)=>s+p.totalAmount,0);
+document.getElementById('po-summary-cards').innerHTML = `
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value">${purchases.length}</div><div class="kpi-label">Total Orders</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-warning">${ERPAPP.fmtCurrency(totalPoSpend)}</div><div class="kpi-label">Total Spend</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-primary">${ERPAPP.fmtCurrency(pendingPoVal)}</div><div class="kpi-label">Pending Value</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-danger">${purchases.filter(p=>p.status==='cancelled').length}</div><div class="kpi-label">Cancelled</div></div></div></div>`;
+const poStatusData = [{label:'Pending',value:purchases.filter(p=>p.status==='pending').length,display:purchases.filter(p=>p.status==='pending').length+' orders'},{label:'Received',value:purchases.filter(p=>p.status==='received').length,display:purchases.filter(p=>p.status==='received').length+' orders'},{label:'Cancelled',value:purchases.filter(p=>p.status==='cancelled').length,display:purchases.filter(p=>p.status==='cancelled').length+' orders'}];
+barChart('po-by-status', poStatusData, 'bg-warning');
+const supplierMap = {};
+purchases.filter(p=>p.status==='received').forEach(p => { if(!supplierMap[p.supplier]){supplierMap[p.supplier]={orders:0,spend:0};} supplierMap[p.supplier].orders++; supplierMap[p.supplier].spend+=p.totalAmount; });
+document.getElementById('top-suppliers').innerHTML = Object.entries(supplierMap).sort((a,b)=>b[1].spend-a[1].spend).map(([s,d]) => `<tr><td>${s}</td><td class="text-end">${d.orders}</td><td class="text-end fw-semibold">${ERPAPP.fmtCurrency(d.spend)}</td></tr>`).join('');
+
+// ===== STOCK MOVEMENTS =====
+const totalIn = ledger.filter(e=>e.qty>0).reduce((s,e)=>s+e.qty,0);
+const totalOut = ledger.filter(e=>e.qty<0).reduce((s,e)=>s+Math.abs(e.qty),0);
+const purchaseIn = ledger.filter(e=>e.type==='purchase'&&e.qty>0).reduce((s,e)=>s+e.qty,0);
+const saleOut = ledger.filter(e=>e.type==='sale').reduce((s,e)=>s+Math.abs(e.qty),0);
+const jobOut = ledger.filter(e=>e.type==='job').reduce((s,e)=>s+Math.abs(e.qty),0);
+const adjIn = ledger.filter(e=>e.type==='adjustment'&&e.qty>0).reduce((s,e)=>s+e.qty,0);
+const adjOut = ledger.filter(e=>e.type==='adjustment'&&e.qty<0).reduce((s,e)=>s+Math.abs(e.qty),0);
+document.getElementById('mov-summary-cards').innerHTML = `
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-success">+${totalIn}</div><div class="kpi-label">Total Stock In</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-danger">-${totalOut}</div><div class="kpi-label">Total Stock Out</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-primary">${totalIn-totalOut>0?'+':''}${totalIn-totalOut}</div><div class="kpi-label">Net Movement</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value">${ledger.length}</div><div class="kpi-label">Total Entries</div></div></div></div>`;
+barChart('mov-by-type', [
+  {label:'Purchase (IN)',value:purchaseIn,display:'+'+purchaseIn+' units'},
+  {label:'Sale (OUT)',value:saleOut,display:'-'+saleOut+' units'},
+  {label:'Job Usage (OUT)',value:jobOut,display:'-'+jobOut+' units'},
+  {label:'Adjustment (IN)',value:adjIn,display:'+'+adjIn+' units'},
+  {label:'Adjustment (OUT)',value:adjOut,display:'-'+adjOut+' units'}
+],'bg-primary');
+
+// ===== LOW STOCK =====
+const lowStock = products.filter(p => p.stockQty <= p.reorderPoint);
+const outOfStock = products.filter(p => p.stockQty === 0);
+document.getElementById('low-summary-cards').innerHTML = `
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-danger">${lowStock.length}</div><div class="kpi-label">Low Stock Items</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-danger fw-bold">${outOfStock.length}</div><div class="kpi-label">Out of Stock</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-success">${products.length-lowStock.length}</div><div class="kpi-label">Healthy Stock</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value">${products.length}</div><div class="kpi-label">Total Products</div></div></div></div>`;
+document.getElementById('low-stock-detail').innerHTML = lowStock.length === 0
+  ? '<tr><td colspan="7" class="text-center text-muted py-3">All stock levels healthy</td></tr>'
+  : lowStock.sort((a,b) => a.stockQty-b.stockQty).map(p => {
+      const shortfall = p.reorderPoint - p.stockQty;
+      const pct = p.reorderPoint > 0 ? Math.round(p.stockQty/p.reorderPoint*100) : 0;
+      const cls = p.stockQty === 0 ? 'text-danger fw-bold' : 'text-warning fw-semibold';
+      return `<tr>
+        <td><span class="erp-doc-ref">${p.sku}</span></td>
+        <td>${p.name}</td>
+        <td><span class="badge bg-light text-dark border">${p.category||'—'}</span></td>
+        <td class="text-end"><span class="${cls}">${p.stockQty}</span> ${p.unit}</td>
+        <td class="text-end">${p.reorderPoint} ${p.unit}</td>
+        <td class="text-end text-danger fw-semibold">${shortfall > 0 ? shortfall : 0} ${p.unit}</td>
+        <td>${p.stockQty===0?'<span class="badge bg-danger">Out of Stock</span>':'<span class="badge bg-warning text-dark">Low Stock</span>'}<div class="progress progress-xs mt-1" style="width:80px"><div class="progress-bar bg-${pct<25?'danger':'warning'}" style="width:${Math.min(pct,100)}%"></div></div></td>
+      </tr>`;
+    }).join('');
+
+// ===== JOBS =====
+const totalMatCost = jobs.reduce((s,j)=>s+j.totalMaterialCost,0);
+const doneJobs = jobs.filter(j=>j.status==='completed');
+document.getElementById('jobs-summary-cards').innerHTML = `
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value">${jobs.length}</div><div class="kpi-label">Total Jobs</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-success">${doneJobs.length}</div><div class="kpi-label">Completed</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-warning">${ERPAPP.fmtCurrency(totalMatCost)}</div><div class="kpi-label">Total Material Cost</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-primary">${jobs.filter(j=>j.status==='in_progress').length}</div><div class="kpi-label">In Progress</div></div></div></div>`;
+const jobStatusData = [
+  {label:'Planned',value:jobs.filter(j=>j.status==='planned').length,display:jobs.filter(j=>j.status==='planned').length+' jobs'},
+  {label:'In Progress',value:jobs.filter(j=>j.status==='in_progress').length,display:jobs.filter(j=>j.status==='in_progress').length+' jobs'},
+  {label:'Completed',value:jobs.filter(j=>j.status==='completed').length,display:jobs.filter(j=>j.status==='completed').length+' jobs'},
+  {label:'Cancelled',value:jobs.filter(j=>j.status==='cancelled').length,display:jobs.filter(j=>j.status==='cancelled').length+' jobs'}
+];
+barChart('jobs-by-status', jobStatusData, 'bg-success');
+const jobPriorityData = [
+  {label:'High',value:jobs.filter(j=>j.priority==='high').length,display:jobs.filter(j=>j.priority==='high').length+' jobs'},
+  {label:'Medium',value:jobs.filter(j=>j.priority==='medium').length,display:jobs.filter(j=>j.priority==='medium').length+' jobs'},
+  {label:'Low',value:jobs.filter(j=>j.priority==='low').length,display:jobs.filter(j=>j.priority==='low').length+' jobs'}
+];
+barChart('jobs-by-priority', jobPriorityData, 'bg-warning');
+document.getElementById('jobs-mat-cost').innerHTML = jobs.sort((a,b)=>b.totalMaterialCost-a.totalMaterialCost).map(j => `
+  <tr>
+    <td><span class="erp-doc-ref">${j.jobNumber}</span></td>
+    <td>${j.title}</td>
+    <td>${ERPAPP.statusBadge(j.status)}</td>
+    <td class="small">${j.assignedTo||'—'}</td>
+    <td class="text-end fw-semibold">${ERPAPP.fmtCurrency(j.totalMaterialCost)}</td>
+  </tr>`).join('');
+</script>
+</body>
+</html>

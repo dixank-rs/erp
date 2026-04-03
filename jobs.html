@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jobs — Portable ERP</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="css/erp.css" rel="stylesheet">
+</head>
+<body>
+<div id="sidebar-backdrop"></div>
+<nav id="erp-sidebar">
+  <div class="sidebar-brand"><div class="d-flex align-items-center gap-2 mb-1"><div style="width:34px;height:34px;background:linear-gradient(135deg,#1a56db,#3b82f6);border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="bi bi-box-seam-fill text-white" style="font-size:.95rem"></i></div><div><div class="brand-title">Portable ERP</div><div class="brand-sub">Local server · Portable</div></div></div></div>
+  <div class="sidebar-nav-scroll">
+    <div class="pt-1">
+      <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html" data-page="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="inventory.html" data-page="inventory"><i class="bi bi-boxes"></i>Inventory</a></li>
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="stock-ledger.html" data-page="ledger"><i class="bi bi-journal-text"></i>Stock Ledger</a></li>
+      </ul>
+      <div class="nav-section-label mt-2">Transactions</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="purchase.html" data-page="purchase"><i class="bi bi-cart-check"></i>Purchases</a></li>
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="sales.html" data-page="sales"><i class="bi bi-bag-check"></i>Sales</a></li>
+        <li class="nav-item"><a class="nav-link" href="jobs.html" data-page="jobs"><i class="bi bi-wrench-adjustable"></i>Jobs</a></li>
+      </ul>
+      <div class="nav-section-label mt-2">Analysis</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="reports.html" data-page="reports"><i class="bi bi-bar-chart-line"></i>Reports</a></li>
+        <li class="nav-item" data-erp-nav-admin>
+          <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" data-erp-logs-toggle href="#nav-logs-sub" role="button" aria-expanded="false" aria-controls="nav-logs-sub"><i class="bi bi-journals"></i>Logs<i class="bi bi-chevron-down small opacity-75 ms-auto"></i></a>
+          <div class="collapse" id="nav-logs-sub">
+            <ul class="nav flex-column border-start ms-3 ps-2 mt-1 mb-2 erp-nav-sub">
+              <li class="nav-item"><a class="nav-link py-1 ps-2" href="logs-activity.html" data-page="logs-activity"><i class="bi bi-activity"></i>Activity log</a></li>
+              <li class="nav-item"><a class="nav-link py-1 ps-2" href="logs-error.html" data-page="logs-error"><i class="bi bi-bug"></i>Error log</a></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div class="nav-section-label mt-2">Account</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-profile><a class="nav-link" href="profile.html" data-page="profile"><i class="bi bi-person-circle"></i>Profile</a></li>
+        <li class="nav-item" data-erp-nav-admin><a class="nav-link" href="users.html" data-page="users"><i class="bi bi-people"></i>Users</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-footer"><a class="nav-link sidebar-logout" href="#" id="erp-logout"><i class="bi bi-box-arrow-right"></i>Log Out</a></div>
+</nav>
+<div id="erp-topbar">
+  <button id="sidebar-toggler"><i class="bi bi-list"></i></button>
+  <span class="page-title"><i class="bi bi-wrench-adjustable me-2 text-primary"></i>Jobs / Work Orders</span>
+  <div class="erp-topbar-user ms-auto">
+    <span id="erp-username" class="erp-topbar-name"></span>
+    <span id="erp-role-badge"></span>
+  </div>
+</div>
+<div id="erp-main">
+<div class="main-content">
+  <div class="page-header">
+    <div><h1>Jobs / Work Orders</h1><p>Track production jobs and material usage</p></div>
+    <div id="action-btns">
+      <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#jobModal" id="btn-new-job"><i class="bi bi-plus-lg me-1"></i>New Job</button>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value" id="sum-total">—</div><div class="kpi-label">Total Jobs</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-primary" id="sum-active">—</div><div class="kpi-label">Active</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-success" id="sum-done">—</div><div class="kpi-label">Completed</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="card kpi-card"><div class="card-body p-3"><div class="kpi-value text-secondary" id="sum-planned">—</div><div class="kpi-label">Planned</div></div></div></div>
+  </div>
+
+  <div class="filter-bar">
+    <div><label>Search</label><input type="search" id="search-input" class="form-control form-control-sm" placeholder="Title, job#, assignee..." style="min-width:180px"></div>
+    <div><label>Status</label><select id="status-filter" class="form-select form-select-sm"><option value="">All</option><option value="planned">Planned</option><option value="in_progress">In Progress</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div>
+    <div><label>Priority</label><select id="priority-filter" class="form-select form-select-sm"><option value="">All</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div>
+    <div class="ms-auto text-muted small align-self-end" id="result-count"></div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table erp-table erp-table-compact table-sm mb-0">
+          <thead><tr><th>Job #</th><th>Title</th><th>Assigned</th><th class="text-nowrap">Priority</th><th class="text-nowrap">Status</th><th class="text-nowrap">Start</th><th class="text-nowrap">Due</th><th class="text-end text-nowrap">Mat. cost</th><th class="text-center text-nowrap">Actions</th></tr></thead>
+          <tbody id="jobs-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- New Job Modal -->
+<div class="modal fade" id="jobModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">New Job / Work Order</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="row g-3 mb-3">
+          <div class="col-md-6"><label class="form-label">Job Title *</label><input type="text" id="job-title" class="form-control" placeholder="e.g. Motor Assembly Batch #3"></div>
+          <div class="col-md-3"><label class="form-label">Priority</label><select id="job-priority" class="form-select"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div>
+          <div class="col-md-3"><label class="form-label">Assigned To</label><input type="text" id="job-assigned" class="form-control" placeholder="Name or team"></div>
+          <div class="col-md-3"><label class="form-label">Start Date *</label><input type="date" id="job-start" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Due Date *</label><input type="date" id="job-due" class="form-control"></div>
+          <div class="col-md-6"><label class="form-label">Description</label><textarea id="job-desc" class="form-control" rows="2"></textarea></div>
+        </div>
+        <div class="mb-3">
+          <div class="d-flex align-items-center justify-content-between mb-2"><label class="form-label mb-0">Materials Required</label><button type="button" class="btn btn-sm btn-outline-primary" id="add-mat-line"><i class="bi bi-plus"></i> Add Material</button></div>
+          <div class="table-responsive erp-modal-table-wrap">
+          <table class="table erp-table erp-table-compact table-sm mb-0">
+            <thead><tr><th>Product</th><th style="width:80px">Stock</th><th style="width:100px">Qty Req.</th><th style="width:130px">Unit Cost (₹)</th><th style="width:120px">Total</th><th style="width:40px"></th></tr></thead>
+            <tbody id="mat-lines"></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8"><label class="form-label">Notes</label><textarea id="job-notes" class="form-control" rows="2"></textarea></div>
+          <div class="col-md-4 text-end align-self-end"><div class="fw-bold fs-5">Material Cost: <span id="mat-total" class="text-primary">₹ 0.00</span></div></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" id="save-job">Create Job</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- View Job Modal -->
+<div class="modal fade" id="viewJobModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="view-job-title">Job Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body" id="view-job-body"></div>
+      <div class="modal-footer" id="view-job-footer"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+ERPAPP.initLayout('jobs');
+const role = ERPAPP.getRole();
+if (role === 'operator') { document.getElementById('btn-new-job')?.classList.add('d-none'); }
+const jobModal = new bootstrap.Modal(document.getElementById('jobModal'));
+const viewJobModal = new bootstrap.Modal(document.getElementById('viewJobModal'));
+const products = ERPDATA.getProducts();
+let matLineCount = 0;
+
+function productOptions() { return products.map(p => `<option value="${p.id}" data-cost="${p.costPrice}" data-stock="${p.stockQty}">${p.name} (${p.sku})</option>`).join(''); }
+
+function addMatLine() {
+  matLineCount++;
+  const row = document.createElement('tr');
+  row.id = 'mat-' + matLineCount;
+  const first = products[0];
+  row.innerHTML = `<td><select class="form-select form-select-sm mat-product">${productOptions()}</select></td>
+    <td class="text-center small mat-stock text-muted align-middle">${first?.stockQty||0}</td>
+    <td><input type="number" class="form-control form-control-sm mat-qty" min="1" value="1"></td>
+    <td><input type="number" class="form-control form-control-sm mat-cost" min="0" step="0.01" value="${first?.costPrice||0}"></td>
+    <td class="fw-semibold mat-total text-end align-middle">₹ 0.00</td>
+    <td><button class="btn btn-sm btn-outline-danger" onclick="this.closest('tr').remove();calcMat()"><i class="bi bi-x"></i></button></td>`;
+  document.getElementById('mat-lines').appendChild(row);
+  const sel = row.querySelector('.mat-product');
+  const costInput = row.querySelector('.mat-cost');
+  const stockCell = row.querySelector('.mat-stock');
+  sel.addEventListener('change', () => {
+    const opt = sel.options[sel.selectedIndex];
+    costInput.value = opt.dataset.cost||''; stockCell.textContent = opt.dataset.stock||'0'; calcMat();
+  });
+  row.querySelectorAll('.mat-qty,.mat-cost').forEach(el => el.addEventListener('input', calcMat));
+  calcMat();
+}
+
+function calcMat() {
+  let total = 0;
+  document.querySelectorAll('#mat-lines tr').forEach(row => {
+    const qty = parseFloat(row.querySelector('.mat-qty')?.value)||0;
+    const cost = parseFloat(row.querySelector('.mat-cost')?.value)||0;
+    const t = qty * cost; row.querySelector('.mat-total').textContent = '₹ ' + ERPAPP.fmt(t); total += t;
+  });
+  document.getElementById('mat-total').textContent = '₹ ' + ERPAPP.fmt(total);
+}
+
+document.getElementById('add-mat-line').addEventListener('click', addMatLine);
+document.getElementById('btn-new-job').addEventListener('click', () => {
+  document.getElementById('mat-lines').innerHTML = ''; matLineCount = 0;
+  document.getElementById('job-start').value = new Date().toISOString().split('T')[0];
+  ['job-title','job-assigned','job-due','job-desc','job-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('job-priority').value = 'medium';
+  document.getElementById('mat-total').textContent = '₹ 0.00';
+});
+
+function renderTable() {
+  const jobs = ERPDATA.getJobs();
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const statusF = document.getElementById('status-filter').value;
+  const priorityF = document.getElementById('priority-filter').value;
+  let filtered = jobs.filter(j => {
+    if (statusF && j.status !== statusF) return false;
+    if (priorityF && j.priority !== priorityF) return false;
+    if (search && !j.title.toLowerCase().includes(search) && !j.jobNumber.toLowerCase().includes(search) && !(j.assignedTo||'').toLowerCase().includes(search)) return false;
+    return true;
+  }).sort((a,b) => new Date(b.startDate)-new Date(a.startDate));
+  document.getElementById('result-count').textContent = filtered.length + ' jobs';
+  document.getElementById('sum-total').textContent = jobs.length;
+  document.getElementById('sum-active').textContent = jobs.filter(j=>j.status==='in_progress').length;
+  document.getElementById('sum-done').textContent = jobs.filter(j=>j.status==='completed').length;
+  document.getElementById('sum-planned').textContent = jobs.filter(j=>j.status==='planned').length;
+  const canEdit = role !== 'operator';
+  const tbody = document.getElementById('jobs-tbody');
+  if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="bi bi-wrench-adjustable"></i><p>No jobs found</p></div></td></tr>'; return; }
+  const today = new Date().toISOString().split('T')[0];
+  tbody.innerHTML = filtered.map(j => {
+    const overdue = j.status !== 'completed' && j.status !== 'cancelled' && j.dueDate < today;
+    return `<tr class="${overdue ? 'table-danger' : ''}">
+      <td><span class="erp-doc-ref">${j.jobNumber}</span></td>
+      <td><div class="fw-500">${j.title}</div>${j.description ? `<div class="text-muted" style="font-size:.75rem">${j.description.substring(0,60)}${j.description.length>60?'...':''}</div>` : ''}</td>
+      <td class="small">${j.assignedTo||'—'}</td>
+      <td>${ERPAPP.priorityBadge(j.priority)}</td>
+      <td>${ERPAPP.statusBadge(j.status)}</td>
+      <td class="small text-muted text-nowrap">${ERPAPP.fmtDate(j.startDate)}</td>
+      <td class="small td-nowrap ${overdue ? 'text-danger fw-semibold' : 'text-muted'}"><span class="align-middle">${ERPAPP.fmtDate(j.dueDate)}</span>${overdue ? ' <i class="bi bi-exclamation-triangle-fill text-danger align-middle" style="font-size:.85rem"></i>' : ''}</td>
+      <td class="text-end small text-nowrap">₹${ERPAPP.fmt(j.totalMaterialCost)}</td>
+      <td class="text-center">
+        <div class="erp-table-actions">
+        <button type="button" class="btn btn-outline-primary btn-action-bracket" onclick="viewJob(${j.id})" title="View details"><i class="bi bi-eye"></i></button>
+        ${canEdit && j.status==='planned' ? `<button type="button" class="btn btn-primary btn-action-bracket" onclick="updateJobStatus(${j.id},'in_progress')" title="Start"><i class="bi bi-play-fill"></i></button>` : ''}
+        ${canEdit && j.status==='in_progress' ? `<button type="button" class="btn btn-success btn-action-bracket" onclick="updateJobStatus(${j.id},'completed')" title="Complete"><i class="bi bi-check-lg"></i></button>` : ''}
+        ${canEdit && (j.status==='planned'||j.status==='in_progress') ? `<button type="button" class="btn btn-outline-danger btn-action-bracket" onclick="updateJobStatus(${j.id},'cancelled')" title="Cancel"><i class="bi bi-x-lg"></i></button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function updateJobStatus(id, status) {
+  const jobs = ERPDATA.getJobs();
+  const idx = jobs.findIndex(j => j.id === id);
+  if (idx === -1) return;
+  jobs[idx].status = status;
+  if (status === 'completed') { jobs[idx].completedDate = new Date().toISOString().split('T')[0]; }
+  ERPDATA.setJobs(jobs); renderTable();
+  ERPAPP.showToast(`Job status updated to ${status.replace('_',' ')}.`, status === 'cancelled' ? 'warning' : 'success');
+}
+
+function viewJob(id) {
+  const j = ERPDATA.getJobs().find(x => x.id === id);
+  if (!j) return;
+  document.getElementById('view-job-title').textContent = j.jobNumber + ' — ' + j.title;
+  document.getElementById('view-job-body').innerHTML = `
+    <div class="row g-3 mb-3">
+      <div class="col-md-4"><div class="detail-label">Status</div><div class="mt-1">${ERPAPP.statusBadge(j.status)}</div></div>
+      <div class="col-md-4"><div class="detail-label">Priority</div><div class="mt-1">${ERPAPP.priorityBadge(j.priority)}</div></div>
+      <div class="col-md-4"><div class="detail-label">Assigned To</div><div class="detail-value">${j.assignedTo||'—'}</div></div>
+      <div class="col-md-4"><div class="detail-label">Start Date</div><div class="detail-value">${ERPAPP.fmtDate(j.startDate)}</div></div>
+      <div class="col-md-4"><div class="detail-label">Due Date</div><div class="detail-value">${ERPAPP.fmtDate(j.dueDate)}</div></div>
+      <div class="col-md-4"><div class="detail-label">Completed Date</div><div class="detail-value">${ERPAPP.fmtDate(j.completedDate)}</div></div>
+      <div class="col-12"><div class="detail-label">Description</div><div class="detail-value">${j.description||'—'}</div></div>
+      ${j.notes ? `<div class="col-12"><div class="detail-label">Notes</div><div class="detail-value">${j.notes}</div></div>` : ''}
+    </div>
+    <h6 class="fw-semibold mb-2">Materials</h6>
+    <div class="table-responsive erp-modal-table-wrap">
+    <table class="table erp-table erp-table-compact table-sm mb-0">
+      <thead><tr><th>Product</th><th>SKU</th><th class="text-end">Req.</th><th class="text-end">Used</th><th class="text-end">Unit Cost</th><th class="text-end">Total</th></tr></thead>
+      <tbody>${j.materials.map(m=>`<tr><td>${m.productName}</td><td><span class="erp-doc-ref" style="font-size:.75rem">${m.productSku}</span></td><td class="text-end">${m.qtyRequired}</td><td class="text-end">${m.qtyUsed||0}</td><td class="text-end">₹${ERPAPP.fmt(m.unitCost)}</td><td class="text-end fw-semibold">₹${ERPAPP.fmt(m.qtyRequired*m.unitCost)}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="5" class="text-end fw-bold">Total Material Cost</td><td class="text-end fw-bold text-primary">₹${ERPAPP.fmt(j.totalMaterialCost)}</td></tr></tfoot>
+    </table>
+    </div>`;
+  document.getElementById('view-job-footer').innerHTML = `<button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>`;
+  viewJobModal.show();
+}
+
+document.getElementById('save-job').addEventListener('click', () => {
+  const title = document.getElementById('job-title').value.trim();
+  const startDate = document.getElementById('job-start').value;
+  const dueDate = document.getElementById('job-due').value;
+  if (!title || !startDate || !dueDate) { ERPAPP.showToast('Fill title, start and due dates.','danger'); return; }
+  const materials = [];
+  let matTotal = 0;
+  document.querySelectorAll('#mat-lines tr').forEach(row => {
+    const productId = parseInt(row.querySelector('.mat-product')?.value);
+    const qty = parseInt(row.querySelector('.mat-qty')?.value)||0;
+    const unitCost = parseFloat(row.querySelector('.mat-cost')?.value)||0;
+    if (qty <= 0) return;
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    const total = qty * unitCost; matTotal += total;
+    materials.push({ id: Date.now() + Math.random(), productId, productName: product.name, productSku: product.sku, qtyRequired: qty, qtyUsed: 0, unitCost });
+  });
+  const jobs = ERPDATA.getJobs();
+  const newJob = { id: ERPDATA.nextId(jobs), jobNumber: 'JOB-' + new Date().getFullYear() + '-' + String(ERPDATA.nextId(jobs)).padStart(3,'0'), title, description: document.getElementById('job-desc').value.trim(), status: 'planned', priority: document.getElementById('job-priority').value, assignedTo: document.getElementById('job-assigned').value.trim(), startDate, dueDate, completedDate: null, materials, totalMaterialCost: matTotal, notes: document.getElementById('job-notes').value.trim(), createdAt: new Date().toISOString() };
+  jobs.push(newJob); ERPDATA.setJobs(jobs);
+  jobModal.hide(); renderTable(); ERPAPP.showToast('Job created.','success');
+});
+
+document.getElementById('search-input').addEventListener('input', renderTable);
+document.getElementById('status-filter').addEventListener('change', renderTable);
+document.getElementById('priority-filter').addEventListener('change', renderTable);
+renderTable();
+</script>
+</body>
+</html>

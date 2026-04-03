@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — Portable ERP</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="css/erp.css" rel="stylesheet">
+</head>
+<body>
+<div id="sidebar-backdrop"></div>
+
+<!-- SIDEBAR -->
+<nav id="erp-sidebar">
+  <div class="sidebar-brand">
+    <div class="d-flex align-items-center gap-2 mb-1">
+      <div style="width:34px;height:34px;background:linear-gradient(135deg,#1a56db,#3b82f6);border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i class="bi bi-box-seam-fill text-white" style="font-size:.95rem"></i>
+      </div>
+      <div>
+        <div class="brand-title">Portable ERP</div>
+        <div class="brand-sub">Local server · Portable</div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-nav-scroll">
+    <div class="pt-1">
+      <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html" data-page="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="inventory.html" data-page="inventory"><i class="bi bi-boxes"></i>Inventory</a></li>
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="stock-ledger.html" data-page="ledger"><i class="bi bi-journal-text"></i>Stock Ledger</a></li>
+      </ul>
+      <div class="nav-section-label mt-2">Transactions</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="purchase.html" data-page="purchase"><i class="bi bi-cart-check"></i>Purchases</a></li>
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="sales.html" data-page="sales"><i class="bi bi-bag-check"></i>Sales</a></li>
+        <li class="nav-item"><a class="nav-link" href="jobs.html" data-page="jobs"><i class="bi bi-wrench-adjustable"></i>Jobs</a></li>
+      </ul>
+      <div class="nav-section-label mt-2">Analysis</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="reports.html" data-page="reports"><i class="bi bi-bar-chart-line"></i>Reports</a></li>
+        <li class="nav-item" data-erp-nav-admin>
+          <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" data-erp-logs-toggle href="#nav-logs-sub" role="button" aria-expanded="false" aria-controls="nav-logs-sub"><i class="bi bi-journals"></i>Logs<i class="bi bi-chevron-down small opacity-75 ms-auto"></i></a>
+          <div class="collapse" id="nav-logs-sub">
+            <ul class="nav flex-column border-start ms-3 ps-2 mt-1 mb-2 erp-nav-sub">
+              <li class="nav-item"><a class="nav-link py-1 ps-2" href="logs-activity.html" data-page="logs-activity"><i class="bi bi-activity"></i>Activity log</a></li>
+              <li class="nav-item"><a class="nav-link py-1 ps-2" href="logs-error.html" data-page="logs-error"><i class="bi bi-bug"></i>Error log</a></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div class="nav-section-label mt-2">Account</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-profile><a class="nav-link" href="profile.html" data-page="profile"><i class="bi bi-person-circle"></i>Profile</a></li>
+        <li class="nav-item" data-erp-nav-admin><a class="nav-link" href="users.html" data-page="users"><i class="bi bi-people"></i>Users</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <a class="nav-link sidebar-logout" href="#" id="erp-logout"><i class="bi bi-box-arrow-right"></i>Log Out</a>
+  </div>
+</nav>
+
+<!-- TOPBAR -->
+<div id="erp-topbar">
+  <button id="sidebar-toggler"><i class="bi bi-list"></i></button>
+  <span class="page-title"><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard</span>
+  <div class="erp-topbar-user ms-auto">
+    <span id="erp-username" class="erp-topbar-name"></span>
+    <span id="erp-role-badge"></span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="erp-main">
+<div class="main-content">
+
+  <div class="page-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="text-muted mb-0 mt-1" id="dash-lead">Review key metrics, open orders, jobs, stock alerts, and recent activity in one place.</p>
+    </div>
+    <div class="text-muted small align-self-start" id="dash-date"></div>
+  </div>
+
+  <!-- KPI Cards (dashboard-only layout; IDs used by inline script) -->
+  <div class="erp-dashboard-kpis mb-4" id="erp-dashboard-kpis">
+    <div class="row g-3 mb-0 mb-lg-3">
+      <div class="col-6 col-xl-3">
+        <div class="erp-dash-kpi erp-dash-kpi--indigo h-100">
+          <div class="erp-dash-kpi-accent" aria-hidden="true"></div>
+          <div class="erp-dash-kpi-body">
+            <div class="erp-dash-kpi-head">
+              <span class="erp-dash-kpi-label">Total products</span>
+              <span class="erp-dash-kpi-icon" aria-hidden="true"><i class="bi bi-boxes"></i></span>
+            </div>
+            <div class="erp-dash-kpi-value" id="kpi-products">—</div>
+            <p class="erp-dash-kpi-meta mb-0" id="kpi-products-meta"></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="erp-dash-kpi erp-dash-kpi--emerald h-100">
+          <div class="erp-dash-kpi-accent" aria-hidden="true"></div>
+          <div class="erp-dash-kpi-body">
+            <div class="erp-dash-kpi-head">
+              <span class="erp-dash-kpi-label">Inventory value</span>
+              <span class="erp-dash-kpi-icon" aria-hidden="true"><i class="bi bi-currency-rupee"></i></span>
+            </div>
+            <div class="erp-dash-kpi-value text-success" id="kpi-inv-value">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="erp-dash-kpi erp-dash-kpi--amber h-100">
+          <div class="erp-dash-kpi-accent" aria-hidden="true"></div>
+          <div class="erp-dash-kpi-body">
+            <div class="erp-dash-kpi-head">
+              <span class="erp-dash-kpi-label">Open purchase orders</span>
+              <span class="erp-dash-kpi-icon" aria-hidden="true"><i class="bi bi-cart-check"></i></span>
+            </div>
+            <div class="erp-dash-kpi-value" id="kpi-open-po">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="erp-dash-kpi erp-dash-kpi--sky h-100">
+          <div class="erp-dash-kpi-accent" aria-hidden="true"></div>
+          <div class="erp-dash-kpi-body">
+            <div class="erp-dash-kpi-head">
+              <span class="erp-dash-kpi-label">Open sales orders</span>
+              <span class="erp-dash-kpi-icon" aria-hidden="true"><i class="bi bi-bag-check"></i></span>
+            </div>
+            <div class="erp-dash-kpi-value" id="kpi-open-so">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-6 col-xl-3">
+        <div class="erp-dash-kpi erp-dash-kpi--rose h-100">
+          <div class="erp-dash-kpi-accent" aria-hidden="true"></div>
+          <div class="erp-dash-kpi-body">
+            <div class="erp-dash-kpi-head">
+              <span class="erp-dash-kpi-label">Active jobs</span>
+              <span class="erp-dash-kpi-icon" aria-hidden="true"><i class="bi bi-wrench-adjustable"></i></span>
+            </div>
+            <div class="erp-dash-kpi-value" id="kpi-active-jobs">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="erp-dash-kpi erp-dash-kpi--green h-100">
+          <div class="erp-dash-kpi-accent" aria-hidden="true"></div>
+          <div class="erp-dash-kpi-body">
+            <div class="erp-dash-kpi-head">
+              <span class="erp-dash-kpi-label">Total revenue</span>
+              <span class="erp-dash-kpi-icon" aria-hidden="true"><i class="bi bi-graph-up-arrow"></i></span>
+            </div>
+            <div class="erp-dash-kpi-value text-success" id="kpi-revenue">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="erp-dash-kpi erp-dash-kpi--orange h-100">
+          <div class="erp-dash-kpi-accent" aria-hidden="true"></div>
+          <div class="erp-dash-kpi-body">
+            <div class="erp-dash-kpi-head">
+              <span class="erp-dash-kpi-label">Total purchases</span>
+              <span class="erp-dash-kpi-icon" aria-hidden="true"><i class="bi bi-graph-down-arrow"></i></span>
+            </div>
+            <div class="erp-dash-kpi-value text-warning" id="kpi-spend">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="erp-dash-kpi erp-dash-kpi--red h-100">
+          <div class="erp-dash-kpi-accent" aria-hidden="true"></div>
+          <div class="erp-dash-kpi-body">
+            <div class="erp-dash-kpi-head">
+              <span class="erp-dash-kpi-label">Low stock SKUs</span>
+              <span class="erp-dash-kpi-icon" aria-hidden="true"><i class="bi bi-exclamation-triangle"></i></span>
+            </div>
+            <div class="erp-dash-kpi-value text-danger" id="kpi-low-stock">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Low Stock Alert -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
+          <span class="fw-semibold"><i class="bi bi-exclamation-triangle text-danger me-2"></i>Low Stock Alerts</span>
+          <a href="inventory.html" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+          <table class="table erp-table erp-table-compact table-sm mb-0">
+            <thead><tr><th>Product</th><th class="text-end">Stock</th><th class="text-end">Reorder</th></tr></thead>
+            <tbody id="low-stock-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
+          <span class="fw-semibold"><i class="bi bi-activity text-primary me-2"></i>Recent Activity</span>
+        </div>
+        <div class="card-body py-1 px-3" id="activity-feed" style="max-height:380px;overflow-y:auto">
+        </div>
+      </div>
+    </div>
+
+    <!-- Jobs Overview -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
+          <span class="fw-semibold"><i class="bi bi-wrench-adjustable text-warning me-2"></i>Jobs Overview</span>
+          <a href="jobs.html" class="btn btn-sm btn-outline-primary">Manage</a>
+        </div>
+        <div class="card-body" id="jobs-overview"></div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
+          <span class="fw-semibold"><i class="bi bi-bag-check text-info me-2"></i>Recent Sales</span>
+          <a href="sales.html" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+          <table class="table erp-table erp-table-compact table-sm mb-0">
+            <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th class="text-end">Amount</th></tr></thead>
+            <tbody id="recent-sales-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+ERPAPP.initLayout('dashboard');
+const user = ERPAPP.getUser();
+if (user) {
+  const who = user.fullName || user.username || 'User';
+  document.getElementById('dash-lead').textContent =
+    `Monitor inventory, orders, and jobs`;
+  const el = document.getElementById('erp-username-sm'); if(el) el.textContent = user.fullName;
+}
+document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+const products = ERPDATA.getProducts();
+const purchases = ERPDATA.getPurchases();
+const sales = ERPDATA.getSales();
+const jobs = ERPDATA.getJobs();
+const activities = ERPDATA.getActivities();
+
+const invValue = products.reduce((s, p) => s + p.costPrice * p.stockQty, 0);
+const openPO = purchases.filter(p => p.status === 'pending').length;
+const openSO = sales.filter(s => s.status === 'pending' || s.status === 'shipped').length;
+const activeJobs = jobs.filter(j => j.status === 'in_progress' || j.status === 'planned').length;
+const totalRevenue = sales.filter(s => s.status !== 'cancelled').reduce((s, o) => s + o.totalAmount, 0);
+const totalSpend = purchases.filter(p => p.status === 'received').reduce((s, o) => s + o.totalAmount, 0);
+const lowStockItems = products.filter(p => p.stockQty <= p.reorderPoint);
+
+document.getElementById('kpi-products').textContent = products.length;
+document.getElementById('kpi-inv-value').textContent = ERPAPP.fmtCurrency(invValue);
+document.getElementById('kpi-open-po').textContent = openPO;
+document.getElementById('kpi-open-so').textContent = openSO;
+document.getElementById('kpi-active-jobs').textContent = activeJobs;
+document.getElementById('kpi-revenue').textContent = ERPAPP.fmtCurrency(totalRevenue);
+document.getElementById('kpi-spend').textContent = ERPAPP.fmtCurrency(totalSpend);
+document.getElementById('kpi-low-stock').textContent = lowStockItems.length;
+const metaEl = document.getElementById('kpi-products-meta');
+if (lowStockItems.length > 0) {
+  const n = lowStockItems.length;
+  metaEl.textContent = n === 1 ? '1 SKU at or below reorder point' : n + ' SKUs at or below reorder point';
+} else {
+  metaEl.textContent = 'All SKUs above reorder point';
+}
+
+// Low stock table
+const lstBody = document.getElementById('low-stock-tbody');
+if (lowStockItems.length === 0) {
+  lstBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">All stock levels healthy</td></tr>';
+} else {
+  lstBody.innerHTML = lowStockItems.map(p => `
+    <tr>
+      <td><div class="fw-500 small">${p.name}</div><div class="text-mono text-muted" style="font-size:.72rem">${p.sku}</div></td>
+      <td class="text-end"><span class="${p.stockQty === 0 ? 'text-danger fw-bold' : 'text-warning fw-600'}">${p.stockQty}</span> ${p.unit}</td>
+      <td class="text-end text-muted">${p.reorderPoint} ${p.unit}</td>
+    </tr>`).join('');
+}
+
+// Activity feed
+const actFeed = document.getElementById('activity-feed');
+const typeIcons = { product:'box-seam text-success', purchase:'cart-check text-warning', sale:'bag-check text-info', job:'wrench-adjustable text-primary', ledger:'journal-text text-secondary' };
+actFeed.innerHTML = activities.map(a => `
+  <div class="activity-item border-bottom">
+    <div class="activity-icon bg-light"><i class="bi bi-${typeIcons[a.type]||'circle text-muted'}"></i></div>
+    <div class="activity-body">
+      <p>${a.description}</p>
+      <small><i class="bi bi-person me-1"></i>${a.user} · ${ERPAPP.fmtDateTime(a.createdAt)}</small>
+    </div>
+  </div>`).join('');
+
+// Jobs overview
+const statusCounts = { planned:0, in_progress:0, completed:0, cancelled:0 };
+jobs.forEach(j => { if (statusCounts[j.status] !== undefined) statusCounts[j.status]++; });
+const total = jobs.length || 1;
+document.getElementById('jobs-overview').innerHTML = `
+  <div class="row g-3 mb-3">
+    <div class="col-6"><div class="report-stat"><div class="stat-value">${statusCounts.planned}</div><div class="stat-label">Planned</div></div></div>
+    <div class="col-6"><div class="report-stat"><div class="stat-value text-primary">${statusCounts.in_progress}</div><div class="stat-label">In Progress</div></div></div>
+    <div class="col-6"><div class="report-stat"><div class="stat-value text-success">${statusCounts.completed}</div><div class="stat-label">Completed</div></div></div>
+    <div class="col-6"><div class="report-stat"><div class="stat-value text-danger">${statusCounts.cancelled}</div><div class="stat-label">Cancelled</div></div></div>
+  </div>
+  <div class="mb-1 d-flex justify-content-between small text-muted"><span>Progress</span><span>${statusCounts.completed}/${jobs.length} completed</span></div>
+  <div class="progress progress-xs"><div class="progress-bar bg-success" style="width:${Math.round(statusCounts.completed/total*100)}%"></div></div>`;
+
+// Recent sales
+const recentSalesTbody = document.getElementById('recent-sales-tbody');
+const recentSales = [...sales].sort((a,b) => new Date(b.orderDate)-new Date(a.orderDate)).slice(0,5);
+recentSalesTbody.innerHTML = recentSales.map(s => `
+  <tr>
+    <td class="text-mono small">${s.soNumber}</td>
+    <td class="small">${s.customer}</td>
+    <td>${ERPAPP.statusBadge(s.status)}</td>
+    <td class="text-end small fw-semibold">${ERPAPP.fmtCurrency(s.totalAmount)}</td>
+  </tr>`).join('');
+</script>
+</body>
+</html>

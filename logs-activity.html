@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Activity log — Portable ERP</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="css/erp.css" rel="stylesheet">
+</head>
+<body>
+<div id="sidebar-backdrop"></div>
+<nav id="erp-sidebar">
+  <div class="sidebar-brand">
+    <div class="d-flex align-items-center gap-2 mb-1">
+      <div style="width:34px;height:34px;background:linear-gradient(135deg,#1a56db,#3b82f6);border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i class="bi bi-box-seam-fill text-white" style="font-size:.95rem"></i>
+      </div>
+      <div>
+        <div class="brand-title">Portable ERP</div>
+        <div class="brand-sub">Local server · Portable</div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-nav-scroll">
+    <div class="pt-1">
+      <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html" data-page="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="inventory.html" data-page="inventory"><i class="bi bi-boxes"></i>Inventory</a></li>
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="stock-ledger.html" data-page="ledger"><i class="bi bi-journal-text"></i>Stock Ledger</a></li>
+      </ul>
+      <div class="nav-section-label mt-2">Transactions</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="purchase.html" data-page="purchase"><i class="bi bi-cart-check"></i>Purchases</a></li>
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="sales.html" data-page="sales"><i class="bi bi-bag-check"></i>Sales</a></li>
+        <li class="nav-item"><a class="nav-link" href="jobs.html" data-page="jobs"><i class="bi bi-wrench-adjustable"></i>Jobs</a></li>
+      </ul>
+      <div class="nav-section-label mt-2">Analysis</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-restricted><a class="nav-link" href="reports.html" data-page="reports"><i class="bi bi-bar-chart-line"></i>Reports</a></li>
+        <li class="nav-item" data-erp-nav-admin>
+          <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" data-erp-logs-toggle href="#nav-logs-sub" role="button" aria-expanded="false" aria-controls="nav-logs-sub"><i class="bi bi-journals"></i>Logs<i class="bi bi-chevron-down small opacity-75 ms-auto"></i></a>
+          <div class="collapse" id="nav-logs-sub">
+            <ul class="nav flex-column border-start ms-3 ps-2 mt-1 mb-2 erp-nav-sub">
+              <li class="nav-item"><a class="nav-link py-1 ps-2" href="logs-activity.html" data-page="logs-activity"><i class="bi bi-activity"></i>Activity log</a></li>
+              <li class="nav-item"><a class="nav-link py-1 ps-2" href="logs-error.html" data-page="logs-error"><i class="bi bi-bug"></i>Error log</a></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div class="nav-section-label mt-2">Account</div>
+      <ul class="nav flex-column">
+        <li class="nav-item" data-erp-nav-profile><a class="nav-link" href="profile.html" data-page="profile"><i class="bi bi-person-circle"></i>Profile</a></li>
+        <li class="nav-item" data-erp-nav-admin><a class="nav-link" href="users.html" data-page="users"><i class="bi bi-people"></i>Users</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <a class="nav-link sidebar-logout" href="#" id="erp-logout"><i class="bi bi-box-arrow-right"></i>Log Out</a>
+  </div>
+</nav>
+
+<div id="erp-topbar">
+  <button id="sidebar-toggler"><i class="bi bi-list"></i></button>
+  <span class="page-title"><i class="bi bi-activity me-2 text-primary"></i>Activity log</span>
+  <div class="erp-topbar-user ms-auto">
+    <span id="erp-username" class="erp-topbar-name"></span>
+    <span id="erp-role-badge"></span>
+  </div>
+</div>
+
+<div id="erp-main">
+<div class="main-content">
+  <div class="page-header">
+    <div>
+      <h1>Activity log</h1>
+      <p>Audit trail of user actions (sample data — production would record automatically)</p>
+    </div>
+  </div>
+
+  <div class="alert alert-light border mb-3 py-2 px-3" style="font-size:.85rem">
+    <strong class="text-dark"><i class="bi bi-people me-1"></i>Many employees:</strong>
+    In a real deployment each person gets their own user account; roles (RBAC) control menus and actions. Activity logs are usually written by the server for every important change. This screen uses static sample rows to illustrate the idea.
+  </div>
+
+  <div class="filter-bar">
+    <div>
+      <label>Search</label>
+      <input type="search" id="search-input" class="form-control form-control-sm" placeholder="User, module, reference…" style="min-width:200px">
+    </div>
+    <div>
+      <label>From date</label>
+      <input type="date" id="date-from" class="form-control form-control-sm">
+    </div>
+    <div>
+      <label>To date</label>
+      <input type="date" id="date-to" class="form-control form-control-sm">
+    </div>
+    <div>
+      <label>Per page</label>
+      <select id="page-size" class="form-select form-select-sm" style="min-width:80px">
+        <option value="10" selected>10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+    <div class="ms-auto align-self-end">
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-reset-filters"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset filters</button>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table erp-table erp-table-compact table-sm mb-0">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Action</th>
+              <th>Module</th>
+              <th>Details</th>
+              <th>Reference</th>
+              <th class="text-nowrap">IP</th>
+            </tr>
+          </thead>
+          <tbody id="log-tbody"></tbody>
+        </table>
+      </div>
+      <div class="log-pagination-bar">
+        <span id="page-info" class="text-muted"></span>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <button type="button" class="btn btn-sm btn-outline-primary" id="btn-prev" disabled><i class="bi bi-chevron-left"></i> Previous</button>
+          <button type="button" class="btn btn-sm btn-outline-primary" id="btn-next">Next <i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+if (!ERPAPP.isAdmin()) { window.location.href = 'dashboard.html'; }
+ERPAPP.initLayout('logs-activity');
+
+let currentPage = 1;
+
+function getFiltered() {
+  let rows = ERPDATA.getActivityLog();
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  if (q) {
+    rows = rows.filter(r =>
+      [r.user, r.userRole, r.action, r.module, r.details, r.reference || '', r.ip || ''].some(f => (f || '').toLowerCase().includes(q))
+    );
+  }
+  const df = document.getElementById('date-from').value;
+  const dt = document.getElementById('date-to').value;
+  if (df) {
+    const t = new Date(df + 'T00:00:00');
+    rows = rows.filter(r => new Date(r.createdAt) >= t);
+  }
+  if (dt) {
+    const t = new Date(dt + 'T23:59:59.999');
+    rows = rows.filter(r => new Date(r.createdAt) <= t);
+  }
+  return rows;
+}
+
+function render() {
+  const pageSize = parseInt(document.getElementById('page-size').value, 10) || 10;
+  const filtered = getFiltered();
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / pageSize));
+  if (currentPage > pages) currentPage = pages;
+  if (currentPage < 1) currentPage = 1;
+  const start = (currentPage - 1) * pageSize;
+  const slice = filtered.slice(start, start + pageSize);
+
+  const tbody = document.getElementById('log-tbody');
+  if (slice.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No rows match your filters.</td></tr>';
+  } else {
+    tbody.innerHTML = slice.map(r => `
+      <tr>
+        <td class="text-nowrap small">${ERPAPP.fmtDateTime(r.createdAt)}</td>
+        <td class="small fw-500">${r.user}</td>
+        <td><span class="badge bg-light text-dark border text-capitalize">${r.userRole}</span></td>
+        <td class="small">${r.action}</td>
+        <td class="small">${r.module}</td>
+        <td class="small">${r.details}</td>
+        <td class="small"><span class="erp-doc-ref" style="font-size:.75rem">${r.reference}</span></td>
+        <td class="text-mono small text-muted">${r.ip || '—'}</td>
+      </tr>`).join('');
+  }
+
+  const from = total === 0 ? 0 : start + 1;
+  const to = Math.min(start + pageSize, total);
+  document.getElementById('page-info').textContent =
+    total === 0 ? 'No entries' : `Showing ${from}–${to} of ${total} · Page ${currentPage} of ${pages}`;
+  document.getElementById('btn-prev').disabled = currentPage <= 1;
+  document.getElementById('btn-next').disabled = currentPage >= pages || total === 0;
+}
+
+function goPage(delta) {
+  currentPage += delta;
+  render();
+}
+
+document.getElementById('search-input').addEventListener('input', () => { currentPage = 1; render(); });
+document.getElementById('date-from').addEventListener('change', () => { currentPage = 1; render(); });
+document.getElementById('date-to').addEventListener('change', () => { currentPage = 1; render(); });
+document.getElementById('page-size').addEventListener('change', () => { currentPage = 1; render(); });
+document.getElementById('btn-prev').addEventListener('click', () => goPage(-1));
+document.getElementById('btn-next').addEventListener('click', () => goPage(1));
+document.getElementById('btn-reset-filters').addEventListener('click', () => {
+  document.getElementById('search-input').value = '';
+  document.getElementById('date-from').value = '';
+  document.getElementById('date-to').value = '';
+  document.getElementById('page-size').value = '10';
+  currentPage = 1;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
